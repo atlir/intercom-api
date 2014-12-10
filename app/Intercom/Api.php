@@ -1,12 +1,16 @@
-<?php
+<?php namespace App\Intercom;
+
 
 use Intercom\IntercomBasicAuthClient;
 
-class Api{
+class Api {
 
 	protected $intercom;
 
+	protected $event_name = 'purchase';
+
 	public function __construct($credentials){
+
 		$this->intercom = IntercomBasicAuthClient::factory($credentials);
 	}
 
@@ -14,11 +18,23 @@ class Api{
 	{
 		$event_data = array_merge($eventProperties, array(
 			'user_id'=>$userId,
-			'event_name'=>$eventName
+			'event_name'=>$eventName,
+			'created_at' => time()
 		));
 
 		$this->intercom->createEvent($event_data);
+	}
 
+	public function pushPurchase($userId, $price)
+	{
+		$eventProperties = array(
+			'price'=>array(
+				"currency" => "usd",
+				"amount" => $price
+			)
+		);
+
+		$this->pushEvent($userId, $this->event_name, $eventProperties);
 	}
 
 	public function createUser($userId, $userProperties)
@@ -74,5 +90,4 @@ class Api{
 		$user = $this->intercom->deleteUser(array("user_id" => $userId));
 		return $user;
 	}
-
-}
+} 

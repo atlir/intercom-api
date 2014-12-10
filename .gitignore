@@ -1,3 +1,5 @@
-.idea
-vendor
+.idea/
+deprecated
+/vendor
 composer.lock
+.env
